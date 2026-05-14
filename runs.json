@@ -1,0 +1,572 @@
+[
+  {
+    "id": 16939180822,
+    "name": "To the Moon and Back",
+    "date": "2026-01-04",
+    "datetime": "2026-01-04T12:11:40",
+    "distance_mi": 5.947,
+    "moving_time_s": 2899,
+    "elapsed_time_s": 3003,
+    "type": "Run"
+  },
+  {
+    "id": 17026973859,
+    "name": "Cape Lookout SP",
+    "date": "2026-01-12",
+    "datetime": "2026-01-12T09:30:13",
+    "distance_mi": 9.309,
+    "moving_time_s": 9445,
+    "elapsed_time_s": 11248,
+    "type": "Run"
+  },
+  {
+    "id": 17053469337,
+    "name": "Afternoon Run",
+    "date": "2026-01-14",
+    "datetime": "2026-01-14T16:09:04",
+    "distance_mi": 3.549,
+    "moving_time_s": 1988,
+    "elapsed_time_s": 1992,
+    "type": "Run"
+  },
+  {
+    "id": 17074414340,
+    "name": "Afternoon Run",
+    "date": "2026-01-16",
+    "datetime": "2026-01-16T14:03:44",
+    "distance_mi": 4.719,
+    "moving_time_s": 2329,
+    "elapsed_time_s": 2416,
+    "type": "Run"
+  },
+  {
+    "id": 17097115840,
+    "name": "Clay Coyote Shangri Bear Tibbetts Clay East Fred's Clay",
+    "date": "2026-01-18",
+    "datetime": "2026-01-18T10:25:07",
+    "distance_mi": 5.602,
+    "moving_time_s": 4288,
+    "elapsed_time_s": 4309,
+    "type": "Run"
+  },
+  {
+    "id": 17119585792,
+    "name": "Morning Run",
+    "date": "2026-01-20",
+    "datetime": "2026-01-20T10:29:40",
+    "distance_mi": 5.737,
+    "moving_time_s": 2830,
+    "elapsed_time_s": 2943,
+    "type": "Run"
+  },
+  {
+    "id": 17163298476,
+    "name": "Parque de el Retiro",
+    "date": "2026-01-24",
+    "datetime": "2026-01-24T17:09:08",
+    "distance_mi": 3.826,
+    "moving_time_s": 2368,
+    "elapsed_time_s": 3162,
+    "type": "Run"
+  },
+  {
+    "id": 17184616902,
+    "name": "Tres Puentes en C\u00f3rdoba",
+    "date": "2026-01-26",
+    "datetime": "2026-01-26T16:52:16",
+    "distance_mi": 5.591,
+    "moving_time_s": 3112,
+    "elapsed_time_s": 3226,
+    "type": "Run"
+  },
+  {
+    "id": 17208183783,
+    "name": "Granada After the Rain",
+    "date": "2026-01-28",
+    "datetime": "2026-01-28T17:59:46",
+    "distance_mi": 4.534,
+    "moving_time_s": 2656,
+    "elapsed_time_s": 2877,
+    "type": "Run"
+  },
+  {
+    "id": 17240346727,
+    "name": "Stone, Oak and Olive",
+    "date": "2026-01-31",
+    "datetime": "2026-01-31T16:12:00",
+    "distance_mi": 6.516,
+    "moving_time_s": 4060,
+    "elapsed_time_s": 4734,
+    "type": "Run"
+  },
+  {
+    "id": 17292785516,
+    "name": "M\u00e1laga Morning",
+    "date": "2026-02-05",
+    "datetime": "2026-02-05T08:33:40",
+    "distance_mi": 5.811,
+    "moving_time_s": 3626,
+    "elapsed_time_s": 4032,
+    "type": "Run"
+  },
+  {
+    "id": 17323439974,
+    "name": "Afternoon Run",
+    "date": "2026-02-07",
+    "datetime": "2026-02-07T17:07:34",
+    "distance_mi": 3.754,
+    "moving_time_s": 2055,
+    "elapsed_time_s": 2087,
+    "type": "Run"
+  },
+  {
+    "id": 17333872620,
+    "name": "Getting Stoupy",
+    "date": "2026-02-08",
+    "datetime": "2026-02-08T11:48:46",
+    "distance_mi": 5.28,
+    "moving_time_s": 2465,
+    "elapsed_time_s": 2624,
+    "type": "Run"
+  },
+  {
+    "id": 17355548642,
+    "name": "Disco with Ziggy",
+    "date": "2026-02-10",
+    "datetime": "2026-02-10T12:25:40",
+    "distance_mi": 3.421,
+    "moving_time_s": 2110,
+    "elapsed_time_s": 2367,
+    "type": "Run"
+  },
+  {
+    "id": 17400329396,
+    "name": "Buffalo Park, Flagstaff",
+    "date": "2026-02-14",
+    "datetime": "2026-02-14T16:20:40",
+    "distance_mi": 3.951,
+    "moving_time_s": 2545,
+    "elapsed_time_s": 2713,
+    "type": "Run"
+  },
+  {
+    "id": 17511174637,
+    "name": "Cohab Canyon Frying Pan Cassidy Arch Trails, Capitol Reef NP",
+    "date": "2026-02-24",
+    "datetime": "2026-02-24T08:06:06",
+    "distance_mi": 5.811,
+    "moving_time_s": 4288,
+    "elapsed_time_s": 5501,
+    "type": "Run"
+  },
+  {
+    "id": 17582834930,
+    "name": "Afternoon Run",
+    "date": "2026-03-02",
+    "datetime": "2026-03-02T16:09:02",
+    "distance_mi": 2.796,
+    "moving_time_s": 1392,
+    "elapsed_time_s": 1392,
+    "type": "Run"
+  },
+  {
+    "id": 17593786306,
+    "name": "Afternoon Run",
+    "date": "2026-03-03",
+    "datetime": "2026-03-03T13:19:12",
+    "distance_mi": 4.232,
+    "moving_time_s": 2169,
+    "elapsed_time_s": 2280,
+    "type": "Run"
+  },
+  {
+    "id": 17619521756,
+    "name": "Afternoon Run",
+    "date": "2026-03-05",
+    "datetime": "2026-03-05T15:12:14",
+    "distance_mi": 6.951,
+    "moving_time_s": 3635,
+    "elapsed_time_s": 3675,
+    "type": "Run"
+  },
+  {
+    "id": 17641509647,
+    "name": "Afternoon Run",
+    "date": "2026-03-07",
+    "datetime": "2026-03-07T13:23:53",
+    "distance_mi": 6.849,
+    "moving_time_s": 3568,
+    "elapsed_time_s": 3655,
+    "type": "Run"
+  },
+  {
+    "id": 17653068388,
+    "name": "Good Stoup Beer Cheer in the Rain",
+    "date": "2026-03-08",
+    "datetime": "2026-03-08T11:51:08",
+    "distance_mi": 2.956,
+    "moving_time_s": 1519,
+    "elapsed_time_s": 1546,
+    "type": "Run"
+  },
+  {
+    "id": 17702482043,
+    "name": "Saddle Rock Natural Area",
+    "date": "2026-03-12",
+    "datetime": "2026-03-12T14:59:14",
+    "distance_mi": 3.949,
+    "moving_time_s": 2962,
+    "elapsed_time_s": 3265,
+    "type": "Run"
+  },
+  {
+    "id": 17737225883,
+    "name": "Afternoon Run",
+    "date": "2026-03-15",
+    "datetime": "2026-03-15T15:05:21",
+    "distance_mi": 5.401,
+    "moving_time_s": 2814,
+    "elapsed_time_s": 2961,
+    "type": "Run"
+  },
+  {
+    "id": 17772248831,
+    "name": "Afternoon Run",
+    "date": "2026-03-18",
+    "datetime": "2026-03-18T14:00:47",
+    "distance_mi": 4.113,
+    "moving_time_s": 2102,
+    "elapsed_time_s": 2296,
+    "type": "Run"
+  },
+  {
+    "id": 17785105768,
+    "name": "Afternoon Run",
+    "date": "2026-03-19",
+    "datetime": "2026-03-19T15:12:54",
+    "distance_mi": 3.793,
+    "moving_time_s": 1956,
+    "elapsed_time_s": 2022,
+    "type": "Run"
+  },
+  {
+    "id": 17796413215,
+    "name": "Afternoon Run",
+    "date": "2026-03-20",
+    "datetime": "2026-03-20T14:49:55",
+    "distance_mi": 6.229,
+    "moving_time_s": 3327,
+    "elapsed_time_s": 3395,
+    "type": "Run"
+  },
+  {
+    "id": 17820879124,
+    "name": "Sunny Stoup",
+    "date": "2026-03-22",
+    "datetime": "2026-03-22T11:50:32",
+    "distance_mi": 5.305,
+    "moving_time_s": 2618,
+    "elapsed_time_s": 2705,
+    "type": "Run"
+  },
+  {
+    "id": 17847231801,
+    "name": "Afternoon Run",
+    "date": "2026-03-24",
+    "datetime": "2026-03-24T15:22:25",
+    "distance_mi": 5.229,
+    "moving_time_s": 2778,
+    "elapsed_time_s": 2948,
+    "type": "Run"
+  },
+  {
+    "id": 17860172558,
+    "name": "Afternoon Run",
+    "date": "2026-03-25",
+    "datetime": "2026-03-25T16:56:22",
+    "distance_mi": 3.212,
+    "moving_time_s": 1617,
+    "elapsed_time_s": 1745,
+    "type": "Run"
+  },
+  {
+    "id": 17869981886,
+    "name": "Mello Disco",
+    "date": "2026-03-26",
+    "datetime": "2026-03-26T12:41:14",
+    "distance_mi": 4.986,
+    "moving_time_s": 3922,
+    "elapsed_time_s": 4105,
+    "type": "Run"
+  },
+  {
+    "id": 17891518792,
+    "name": "Morning Run",
+    "date": "2026-03-28",
+    "datetime": "2026-03-28T09:18:59",
+    "distance_mi": 6.507,
+    "moving_time_s": 3443,
+    "elapsed_time_s": 3596,
+    "type": "Run"
+  },
+  {
+    "id": 17920043436,
+    "name": "High Steppin' Sunset Shadow",
+    "date": "2026-03-30",
+    "datetime": "2026-03-30T18:12:56",
+    "distance_mi": 6.968,
+    "moving_time_s": 3619,
+    "elapsed_time_s": 3778,
+    "type": "Run"
+  },
+  {
+    "id": 17950503000,
+    "name": "DC tour",
+    "date": "2026-04-02",
+    "datetime": "2026-04-02T09:18:25",
+    "distance_mi": 5.741,
+    "moving_time_s": 3109,
+    "elapsed_time_s": 3415,
+    "type": "Run"
+  },
+  {
+    "id": 17992602114,
+    "name": "James River NB loop",
+    "date": "2026-04-05",
+    "datetime": "2026-04-05T17:23:54",
+    "distance_mi": 4.097,
+    "moving_time_s": 2170,
+    "elapsed_time_s": 2307,
+    "type": "Run"
+  },
+  {
+    "id": 18005008904,
+    "name": "James River NB Carrillon Maymont Oregon Hill",
+    "date": "2026-04-06",
+    "datetime": "2026-04-06T16:00:00",
+    "distance_mi": 6.245,
+    "moving_time_s": 3507,
+    "elapsed_time_s": 3687,
+    "type": "Run"
+  },
+  {
+    "id": 18035758933,
+    "name": "Afternoon Run",
+    "date": "2026-04-08",
+    "datetime": "2026-04-08T14:43:47",
+    "distance_mi": 5.658,
+    "moving_time_s": 2929,
+    "elapsed_time_s": 3026,
+    "type": "Run"
+  },
+  {
+    "id": 18071607905,
+    "name": "Proud of Our Maritime Industry",
+    "date": "2026-04-11",
+    "datetime": "2026-04-11T13:19:29",
+    "distance_mi": 7.384,
+    "moving_time_s": 3781,
+    "elapsed_time_s": 3852,
+    "type": "Run"
+  },
+  {
+    "id": 18085700743,
+    "name": "Major Sea Lion Haulout",
+    "date": "2026-04-12",
+    "datetime": "2026-04-12T14:59:10",
+    "distance_mi": 6.209,
+    "moving_time_s": 3271,
+    "elapsed_time_s": 3332,
+    "type": "Run"
+  },
+  {
+    "id": 18126379556,
+    "name": "Afternoon Run",
+    "date": "2026-04-15",
+    "datetime": "2026-04-15T17:51:23",
+    "distance_mi": 3.708,
+    "moving_time_s": 2030,
+    "elapsed_time_s": 2062,
+    "type": "Run"
+  },
+  {
+    "id": 18137690320,
+    "name": "Afternoon Run",
+    "date": "2026-04-16",
+    "datetime": "2026-04-16T13:42:13",
+    "distance_mi": 6.683,
+    "moving_time_s": 3488,
+    "elapsed_time_s": 3600,
+    "type": "Run"
+  },
+  {
+    "id": 18150275206,
+    "name": "Afternoon Run",
+    "date": "2026-04-17",
+    "datetime": "2026-04-17T14:32:17",
+    "distance_mi": 4.318,
+    "moving_time_s": 2356,
+    "elapsed_time_s": 2482,
+    "type": "Run"
+  },
+  {
+    "id": 18177074052,
+    "name": "Stoup and Sun",
+    "date": "2026-04-19",
+    "datetime": "2026-04-19T11:51:31",
+    "distance_mi": 5.296,
+    "moving_time_s": 2665,
+    "elapsed_time_s": 2908,
+    "type": "Run"
+  },
+  {
+    "id": 18191484160,
+    "name": "Lake Union Loop",
+    "date": "2026-04-20",
+    "datetime": "2026-04-20T16:10:25",
+    "distance_mi": 9.75,
+    "moving_time_s": 5454,
+    "elapsed_time_s": 5456,
+    "type": "Run"
+  },
+  {
+    "id": 18203476419,
+    "name": "Lunch Run",
+    "date": "2026-04-21",
+    "datetime": "2026-04-21T12:38:39",
+    "distance_mi": 3.174,
+    "moving_time_s": 1647,
+    "elapsed_time_s": 1777,
+    "type": "Run"
+  },
+  {
+    "id": 18232592186,
+    "name": "Afternoon Run",
+    "date": "2026-04-23",
+    "datetime": "2026-04-23T15:38:24",
+    "distance_mi": 3.635,
+    "moving_time_s": 2423,
+    "elapsed_time_s": 2856,
+    "type": "Run"
+  },
+  {
+    "id": 18244308334,
+    "name": "Afternoon Run",
+    "date": "2026-04-24",
+    "datetime": "2026-04-24T15:04:40",
+    "distance_mi": 3.17,
+    "moving_time_s": 1648,
+    "elapsed_time_s": 1681,
+    "type": "Run"
+  },
+  {
+    "id": 18257287187,
+    "name": "Hills Aren't Real",
+    "date": "2026-04-25",
+    "datetime": "2026-04-25T11:02:42",
+    "distance_mi": 14.043,
+    "moving_time_s": 8708,
+    "elapsed_time_s": 10066,
+    "type": "Run"
+  },
+  {
+    "id": 18297530058,
+    "name": "Lunch Run",
+    "date": "2026-04-28",
+    "datetime": "2026-04-28T12:30:36",
+    "distance_mi": 5.707,
+    "moving_time_s": 2983,
+    "elapsed_time_s": 3109,
+    "type": "Run"
+  },
+  {
+    "id": 18313804016,
+    "name": "Afternoon Run",
+    "date": "2026-04-29",
+    "datetime": "2026-04-29T17:28:00",
+    "distance_mi": 5.598,
+    "moving_time_s": 2933,
+    "elapsed_time_s": 2986,
+    "type": "Run"
+  },
+  {
+    "id": 18340016871,
+    "name": "Checking water fountains",
+    "date": "2026-05-01",
+    "datetime": "2026-05-01T17:26:45",
+    "distance_mi": 5.588,
+    "moving_time_s": 3187,
+    "elapsed_time_s": 3257,
+    "type": "Run"
+  },
+  {
+    "id": 18351502670,
+    "name": "Afternoon Run",
+    "date": "2026-05-02",
+    "datetime": "2026-05-02T13:34:07",
+    "distance_mi": 3.856,
+    "moving_time_s": 1967,
+    "elapsed_time_s": 1967,
+    "type": "Run"
+  },
+  {
+    "id": 18364251258,
+    "name": "Bullitt East East Phil's Summit Bullitt West Chybinski Bullitt",
+    "date": "2026-05-03",
+    "datetime": "2026-05-03T10:09:03",
+    "distance_mi": 6.344,
+    "moving_time_s": 6409,
+    "elapsed_time_s": 6588,
+    "type": "Run"
+  },
+  {
+    "id": 18391945361,
+    "name": "Afternoon Run",
+    "date": "2026-05-05",
+    "datetime": "2026-05-05T15:12:32",
+    "distance_mi": 3.126,
+    "moving_time_s": 1611,
+    "elapsed_time_s": 1727,
+    "type": "Run"
+  },
+  {
+    "id": 18429244304,
+    "name": "Lunch Run",
+    "date": "2026-05-08",
+    "datetime": "2026-05-08T11:15:10",
+    "distance_mi": 4.68,
+    "moving_time_s": 2462,
+    "elapsed_time_s": 2498,
+    "type": "Run"
+  },
+  {
+    "id": 18440659939,
+    "name": "Bush's, Fairmount, and Minto Brown",
+    "date": "2026-05-09",
+    "datetime": "2026-05-09T07:38:59",
+    "distance_mi": 5.354,
+    "moving_time_s": 2939,
+    "elapsed_time_s": 2989,
+    "type": "Run"
+  },
+  {
+    "id": 18468875896,
+    "name": "Lunch Run",
+    "date": "2026-05-11",
+    "datetime": "2026-05-11T12:45:41",
+    "distance_mi": 6.505,
+    "moving_time_s": 3751,
+    "elapsed_time_s": 3827,
+    "type": "Run"
+  },
+  {
+    "id": 18497868546,
+    "name": "Bike pickup",
+    "date": "2026-05-13",
+    "datetime": "2026-05-13T17:17:53",
+    "distance_mi": 2.303,
+    "moving_time_s": 1150,
+    "elapsed_time_s": 1155,
+    "type": "Run"
+  }
+]

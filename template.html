@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>2026 Running Goal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js"></script>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f7f7f5;
+    --card: #ffffff;
+    --ink: #1f2328;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --accent: #ea580c;       /* Strava orange-ish */
+    --accent-soft: #fed7aa;
+    --good: #16a34a;
+    --bad: #dc2626;
+    --shadow: 0 1px 2px rgba(0,0,0,0.04), 0 1px 8px rgba(0,0,0,0.04);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 32px 24px 64px; }
+  header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 24px; flex-wrap: wrap; gap: 8px; }
+  h1 { font-size: 24px; margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+  .refreshed { color: var(--muted); font-size: 13px; }
+
+  .hero { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 16px; }
+  .hero-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+  .hero-total { font-size: 44px; font-weight: 700; letter-spacing: -0.02em; }
+  .hero-total .unit { color: var(--muted); font-size: 18px; font-weight: 500; margin-left: 6px; }
+  .hero-of { color: var(--muted); font-size: 15px; }
+  .hero-pct { font-size: 18px; font-weight: 600; color: var(--accent); }
+  .bar { height: 14px; background: #f1f0ec; border-radius: 999px; overflow: hidden; position: relative; }
+  .bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent) 0%, #f97316 100%); border-radius: 999px; transition: width 0.6s ease; }
+  .bar-marker { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: 0.4; }
+  .hero-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; color: var(--muted); font-size: 13px; }
+  .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+  .status-ahead { background: #dcfce7; color: var(--good); }
+  .status-behind { background: #fee2e2; color: var(--bad); }
+  .status-onpace { background: #fef3c7; color: #92400e; }
+
+  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 700px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 460px) { .grid { grid-template-columns: 1fr; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: var(--shadow); }
+  .card .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; font-weight: 600; }
+  .card .value { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+  .card .sub { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .card .delta { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .delta-up { background: #dcfce7; color: var(--good); }
+  .delta-down { background: #fee2e2; color: var(--bad); }
+
+  .row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 900px) { .row { grid-template-columns: 1fr; } }
+
+  .chart-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: var(--shadow); }
+  .chart-title { font-size: 14px; font-weight: 600; margin: 0 0 12px; }
+  .chart-wrap { position: relative; height: 280px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  th { font-weight: 600; color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  th.num { text-align: right; }
+
+  footer { color: var(--muted); font-size: 12px; margin-top: 24px; text-align: center; }
+  footer code { background: #efeeea; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>2026 Running Goal</h1>
+    <div class="refreshed" id="refreshed"></div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-top">
+      <div>
+        <span class="hero-total" id="total-miles">—</span><span class="unit">mi</span>
+        <span class="hero-of" id="hero-of"></span>
+      </div>
+      <div class="hero-pct" id="hero-pct"></div>
+    </div>
+    <div class="bar"><div class="bar-fill" id="bar-fill" style="width:0%"></div><div class="bar-marker" id="bar-marker" style="left:0%"></div></div>
+    <div class="hero-bottom">
+      <span id="hero-meta"></span>
+      <span id="hero-status"></span>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card">
+      <div class="label">Frequency rate</div>
+      <div class="value"><span id="freq-rate">—</span><span style="font-size:18px;color:var(--muted);">%</span></div>
+      <div class="sub" id="freq-sub"></div>
+    </div>
+    <div class="card">
+      <div class="label">Avg distance / run</div>
+      <div class="value"><span id="avg-dist">—</span><span style="font-size:18px;color:var(--muted);"> mi</span></div>
+      <div class="sub" id="avg-sub"></div>
+    </div>
+    <div class="card">
+      <div class="label">Freq. rate · last 30d</div>
+      <div class="value"><span id="freq-rate-30">—</span><span style="font-size:18px;color:var(--muted);">%</span></div>
+      <div class="sub" id="freq-30-sub"></div>
+    </div>
+    <div class="card">
+      <div class="label">Avg distance · last 30d</div>
+      <div class="value"><span id="avg-dist-30">—</span><span style="font-size:18px;color:var(--muted);"> mi</span></div>
+      <div class="sub" id="avg-30-sub"></div>
+    </div>
+    <div class="card">
+      <div class="label">Required mi / run</div>
+      <div class="value"><span id="req-dist">—</span><span style="font-size:18px;color:var(--muted);"> mi</span></div>
+      <div class="sub" id="req-dist-sub">at last 30-day frequency rate</div>
+    </div>
+  </section>
+
+  <section class="row">
+    <div class="chart-card">
+      <div class="chart-title">Cumulative miles vs goal pace</div>
+      <div class="chart-wrap"><canvas id="chart-cumulative"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Weekly miles</div>
+      <div class="chart-wrap"><canvas id="chart-weekly"></canvas></div>
+    </div>
+  </section>
+
+  <section class="chart-card">
+    <div class="chart-title">Recent runs</div>
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th><th>Activity</th>
+          <th class="num">Distance</th><th class="num">Pace</th><th class="num">Duration</th>
+        </tr>
+      </thead>
+      <tbody id="recent-runs"></tbody>
+    </table>
+  </section>
+
+  <footer>
+    Data from Strava. Refresh by running <code>python3 refresh.py</code> in this folder.
+  </footer>
+</div>
+
+<script>
+  const DATA = /*__DATA__*/null;
+
+  function fmtNum(x, digits=1) {
+    if (x === null || x === undefined || Number.isNaN(x)) return "—";
+    return Number(x).toLocaleString(undefined, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  }
+  function fmtPace(secondsPerMile) {
+    if (!secondsPerMile || !isFinite(secondsPerMile)) return "—";
+    const m = Math.floor(secondsPerMile / 60);
+    const s = Math.round(secondsPerMile % 60);
+    return `${m}:${String(s).padStart(2, "0")} /mi`;
+  }
+  function fmtDuration(seconds) {
+    if (!seconds) return "—";
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    if (h > 0) return `${h}h ${m}m`;
+    return `${m}m ${String(s).padStart(2, "0")}s`;
+  }
+  function fmtDate(iso) {
+    const d = new Date(iso + "T00:00:00");
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric", weekday: "short" });
+  }
+
+  function render() {
+    if (!DATA) {
+      document.body.innerHTML = "<div style='padding:48px;text-align:center;color:#6b7280;'>No data yet. Run <code>python3 refresh.py</code>.</div>";
+      return;
+    }
+    const d = DATA;
+
+    document.getElementById("refreshed").textContent =
+      "Last refreshed " + new Date(d.last_refreshed).toLocaleString();
+    document.getElementById("total-miles").textContent = fmtNum(d.total_miles, 1);
+    document.getElementById("hero-of").textContent = ` of ${d.goal_miles}`;
+    document.getElementById("hero-pct").textContent = `${fmtNum(d.progress_pct, 1)}%`;
+
+    const fill = document.getElementById("bar-fill");
+    fill.style.width = Math.min(100, d.progress_pct) + "%";
+
+    // Marker for "where you should be today" on the progress bar.
+    const idealPct = (d.ideal_miles_today / d.goal_miles) * 100;
+    document.getElementById("bar-marker").style.left = Math.min(100, idealPct) + "%";
+
+    document.getElementById("hero-meta").textContent =
+      `${d.days_into_year} days in · ${d.days_remaining} days remaining · ${fmtNum(d.miles_remaining, 1)} mi to go`;
+
+    const delta = d.delta_vs_pace;
+    const statusEl = document.getElementById("hero-status");
+    if (Math.abs(delta) < 1) {
+      statusEl.innerHTML = `<span class="status-pill status-onpace">On pace</span>`;
+    } else if (delta > 0) {
+      statusEl.innerHTML = `<span class="status-pill status-ahead">${fmtNum(delta,1)} mi ahead of pace</span>`;
+    } else {
+      statusEl.innerHTML = `<span class="status-pill status-behind">${fmtNum(Math.abs(delta),1)} mi behind pace</span>`;
+    }
+
+    // Stat cards.
+    document.getElementById("freq-rate").textContent = fmtNum(d.frequency_rate, 1);
+    document.getElementById("freq-sub").textContent =
+      `${d.days_run} of ${d.days_into_year} days run so far`;
+
+    document.getElementById("avg-dist").textContent = fmtNum(d.avg_distance, 2);
+    document.getElementById("avg-sub").textContent =
+      `${d.total_runs} runs total`;
+
+    document.getElementById("freq-rate-30").textContent = fmtNum(d.frequency_rate_30, 1);
+    document.getElementById("freq-30-sub").textContent =
+      `${d.days_run_30} of last ${d.window_days} days`;
+
+    document.getElementById("avg-dist-30").textContent = fmtNum(d.avg_distance_30, 2);
+    document.getElementById("avg-30-sub").textContent =
+      `${d.runs_30} runs in last 30d`;
+
+    const reqDistEl = document.getElementById("req-dist");
+    const reqDistSub = document.getElementById("req-dist-sub");
+    if (d.required_avg_distance_30 === null) {
+      reqDistEl.textContent = "—";
+      reqDistSub.textContent = "goal already met or year over";
+    } else {
+      reqDistEl.textContent = fmtNum(d.required_avg_distance_30, 2);
+      reqDistSub.textContent = `at ${fmtNum(d.frequency_rate_30, 1)}% (last 30d) frequency`;
+      // Compare against the 30-day average, since that's the consistent reference point.
+      if (d.avg_distance_30 > 0) {
+        const diff = d.required_avg_distance_30 - d.avg_distance_30;
+        const arrow = diff > 0 ? "↑" : "↓";
+        const cls = diff > 0 ? "delta-down" : "delta-up";
+        reqDistEl.insertAdjacentHTML("afterend",
+          `<span class="delta ${cls}" style="margin-left:8px;font-size:13px;">${arrow} ${fmtNum(Math.abs(diff),2)} mi vs 30d avg</span>`);
+      }
+    }
+
+    // Recent runs.
+    const tbody = document.getElementById("recent-runs");
+    if (!d.recent_runs.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="color:#6b7280;text-align:center;padding:24px;">No runs yet in ${d.goal_year}.</td></tr>`;
+    } else {
+      tbody.innerHTML = d.recent_runs.map(r => {
+        const paceSecPerMi = r.distance_mi > 0 ? r.moving_time_s / r.distance_mi : null;
+        return `<tr>
+          <td>${fmtDate(r.date)}</td>
+          <td>${escapeHtml(r.name)}</td>
+          <td class="num">${fmtNum(r.distance_mi, 2)} mi</td>
+          <td class="num">${fmtPace(paceSecPerMi)}</td>
+          <td class="num">${fmtDuration(r.moving_time_s)}</td>
+        </tr>`;
+      }).join("");
+    }
+
+    drawCumulativeChart(d);
+    drawWeeklyChart(d);
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));
+  }
+
+  function drawCumulativeChart(d) {
+    const ctx = document.getElementById("chart-cumulative");
+    const cumLabels = d.cumulative_series.map(p => p.date);
+    const cumData = d.cumulative_series.map(p => p.miles);
+    const idealLabels = d.ideal_series.map(p => p.date);
+    const idealData = d.ideal_series.map(p => p.miles);
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: idealLabels,
+        datasets: [
+          {
+            label: "Goal pace",
+            data: idealData,
+            borderColor: "#9ca3af",
+            borderDash: [6, 4],
+            borderWidth: 2,
+            pointRadius: 0,
+            tension: 0,
+          },
+          {
+            label: "Your miles",
+            data: cumLabels.map((_, i) => cumData[i]).concat(Array(idealLabels.length - cumLabels.length).fill(null)),
+            borderColor: "#ea580c",
+            backgroundColor: "rgba(234,88,12,0.08)",
+            borderWidth: 3,
+            fill: true,
+            pointRadius: 0,
+            tension: 0.1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { position: "bottom", labels: { boxWidth: 14 } },
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y?.toFixed(1)} mi`,
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: {
+              maxTicksLimit: 8,
+              callback: function(value) {
+                const lbl = this.getLabelForValue(value);
+                const dt = new Date(lbl + "T00:00:00");
+                return dt.toLocaleDateString(undefined, { month: "short" });
+              },
+            },
+            grid: { display: false },
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { callback: v => v + " mi" },
+            grid: { color: "#eef0f3" },
+          },
+        },
+      },
+    });
+  }
+
+  function drawWeeklyChart(d) {
+    const ctx = document.getElementById("chart-weekly");
+    const labels = d.weekly_series.map(w => {
+      const dt = new Date(w.week_start + "T00:00:00");
+      return dt.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    });
+    const data = d.weekly_series.map(w => w.miles);
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [{
+          label: "Miles",
+          data,
+          backgroundColor: "#fb923c",
+          borderRadius: 4,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => `${c.parsed.y.toFixed(1)} mi` } },
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } },
+          y: { beginAtZero: true, ticks: { callback: v => v + " mi" }, grid: { color: "#eef0f3" } },
+        },
+      },
+    });
+  }
+
+  render();
+</script>
+</body>
+</html>
