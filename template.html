@@ -68,14 +68,57 @@
 
   footer { color: var(--muted); font-size: 12px; margin-top: 24px; text-align: center; }
   footer code { background: #efeeea; padding: 2px 6px; border-radius: 4px; font-size: 12px; }
+
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .refresh-btn { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); color: var(--ink); font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s, border-color 0.15s; font-family: inherit; }
+  .refresh-btn:hover { background: #f3f2ef; border-color: #d0d4da; }
+  .refresh-btn:active { background: #e8e7e3; }
+  .refresh-btn:disabled { opacity: 0.6; cursor: wait; }
+  .refresh-btn .icon { width: 14px; height: 14px; display: inline-block; }
+  .refresh-btn.spinning .icon { animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--ink); color: white; padding: 10px 16px; border-radius: 8px; font-size: 13px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 1000; max-width: 90%; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+  .toast.error { background: var(--bad); }
+  .toast.success { background: var(--good); }
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(15,17,21,0.45); display: none; align-items: center; justify-content: center; z-index: 1001; padding: 16px; }
+  .modal-backdrop.show { display: flex; }
+  .modal { background: white; border-radius: 14px; padding: 24px; max-width: 480px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); }
+  .modal h3 { margin: 0 0 8px; font-size: 18px; }
+  .modal p { margin: 0 0 12px; color: var(--muted); font-size: 14px; line-height: 1.5; }
+  .modal code { background: #f3f2ef; padding: 8px 12px; border-radius: 6px; font-size: 13px; display: block; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; word-break: break-all; margin-bottom: 12px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .modal-actions button { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); cursor: pointer; font-size: 13px; font-weight: 600; font-family: inherit; }
+  .modal-actions button.primary { background: var(--ink); color: white; border-color: var(--ink); }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <h1>2026 Running Goal</h1>
-    <div class="refreshed" id="refreshed"></div>
+    <div class="header-right">
+      <div class="refreshed" id="refreshed"></div>
+      <button class="refresh-btn" id="refresh-btn" type="button" title="Pull latest activities from Strava">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.3L3 16"/><path d="M3 21v-5h5"/></svg>
+        <span id="refresh-label">Refresh</span>
+      </button>
+    </div>
   </header>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-backdrop" id="modal-backdrop">
+    <div class="modal">
+      <h3>Refresh needs the local server</h3>
+      <p>You're viewing the dashboard as a file. To refresh from this button, start the local server first:</p>
+      <code>cd ~/prj/stravainsights &amp;&amp; python3 serve.py</code>
+      <p>Or refresh manually from a terminal:</p>
+      <code>cd ~/prj/stravainsights &amp;&amp; python3 refresh.py</code>
+      <div class="modal-actions">
+        <button type="button" id="modal-close">Got it</button>
+      </div>
+    </div>
+  </div>
 
   <section class="hero">
     <div class="hero-top">
@@ -367,6 +410,66 @@
       },
     });
   }
+
+  // ---------- Manual refresh button ----------
+
+  function showToast(message, kind) {
+    const t = document.getElementById("toast");
+    t.textContent = message;
+    t.className = "toast show" + (kind ? " " + kind : "");
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => { t.className = "toast"; }, 4500);
+  }
+
+  function isServed() {
+    // True when the page came from our local Python server, false for file:// opens.
+    return location.protocol === "http:" || location.protocol === "https:";
+  }
+
+  async function doRefresh() {
+    const btn = document.getElementById("refresh-btn");
+    const label = document.getElementById("refresh-label");
+
+    if (!isServed()) {
+      document.getElementById("modal-backdrop").classList.add("show");
+      return;
+    }
+
+    btn.disabled = true;
+    btn.classList.add("spinning");
+    const originalLabel = label.textContent;
+    label.textContent = "Refreshing…";
+
+    try {
+      const resp = await fetch("/refresh", { method: "POST" });
+      const data = await resp.json().catch(() => ({}));
+      if (resp.ok && data.ok) {
+        showToast(`Refreshed in ${data.elapsed_s ?? "?"}s — reloading…`, "success");
+        // Brief pause so the toast is visible before the reload wipes it.
+        setTimeout(() => location.reload(), 600);
+        return;
+      }
+      const detail = data.stderr || data.error || `HTTP ${resp.status}`;
+      showToast("Refresh failed: " + detail.split("\n").slice(-1)[0].slice(0, 160), "error");
+      console.error("Refresh error:", data);
+    } catch (err) {
+      showToast("Refresh failed: " + err.message, "error");
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove("spinning");
+      label.textContent = originalLabel;
+    }
+  }
+
+  document.getElementById("refresh-btn").addEventListener("click", doRefresh);
+  document.getElementById("modal-close").addEventListener("click", () => {
+    document.getElementById("modal-backdrop").classList.remove("show");
+  });
+  document.getElementById("modal-backdrop").addEventListener("click", (e) => {
+    if (e.target.id === "modal-backdrop") {
+      document.getElementById("modal-backdrop").classList.remove("show");
+    }
+  });
 
   render();
 </script>

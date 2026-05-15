@@ -6,22 +6,10 @@ Designed to run in WSL Ubuntu at `~/prj/stravainsights/`.
 
 ## One-time setup
 
-### 1. Move the files into WSL
-
-From a WSL terminal:
-
-```bash
-mkdir -p ~/prj/stravainsights
-cp -r "/mnt/c/Users/tillm/OneDrive/Documents/Claude/Projects/Running Goal Progress Tracker/"* ~/prj/stravainsights/
-cd ~/prj/stravainsights
-ls -la   # confirm README.md, setup.py, refresh.py, template.html are here
-```
-
-Make sure Python 3 and the required libraries are available:
+### 1. Make sure Python 3 and the required libraries are available:
 
 ```bash
 python3 --version             # 3.10+ recommended
-pip3 install --user requests  # the only runtime dependency
 ```
 
 ### 2. Create a Strava API application
@@ -40,10 +28,7 @@ pip3 install --user requests  # the only runtime dependency
 
 ### 3. Run the setup script
 
-In WSL:
-
 ```bash
-cd ~/prj/stravainsights
 python3 setup.py
 ```
 
@@ -67,15 +52,28 @@ This fetches every 2026 activity from Strava and regenerates `dashboard.html`.
 
 ## Daily use
 
-Open `dashboard.html` in your browser. From WSL you can pop it open with:
+You have two ways to view the dashboard:
+
+### Option A — local server (recommended; refresh button works)
 
 ```bash
-explorer.exe dashboard.html      # opens via your default Windows browser
-# or
-wslview dashboard.html           # if wslu is installed
+cd ~/prj/stravainsights
+python3 serve.py
 ```
 
-For quick access, copy the file path and bookmark it (the path will look like `\\wsl.localhost\Ubuntu\home\tillm\prj\stravainsights\dashboard.html`).
+This starts a tiny local server at http://localhost:8732 and auto-opens it in your browser. The **Refresh** button in the dashboard's top-right pulls the latest activities from Strava and reloads — no terminal needed once it's running. Stop the server with Ctrl-C.
+
+Bookmark http://localhost:8732 so it's one click away whenever the server is up.
+
+### Option B — open the file directly
+
+```bash
+explorer.exe dashboard.html   # opens via your default Windows browser
+# or
+wslview dashboard.html        # if wslu is installed
+```
+
+The dashboard displays normally, but the Refresh button can't reach a server, so it will pop up a dialog explaining how to refresh from the terminal instead.
 
 ## Automate the refresh with cron
 
@@ -103,6 +101,7 @@ Notes:
 - `dashboard.html` — the dashboard (rebuilt on every refresh)
 - `setup.py` — one-time OAuth setup
 - `refresh.py` — fetch + rebuild script
+- `serve.py` — local web server for the dashboard (powers the Refresh button)
 - `template.html` — dashboard layout (edit to tweak the look)
 - `refresh.log` — output from cron runs
 
