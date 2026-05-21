@@ -2,7 +2,7 @@
 
 Automated dashboard that pulls your runs from Strava and tracks progress toward your 1000-mile goal.
 
-Designed to run in WSL Ubuntu at `~/prj/stravainsights/`.
+Accessible at https://stravainsights.tillworks.com (password protected). Also runs locally in WSL Ubuntu at `~/prj/stravainsights/`.
 
 ## One-time setup
 
@@ -52,20 +52,20 @@ This fetches every 2026 activity from Strava and regenerates `dashboard.html`.
 
 ## Daily use
 
-You have two ways to view the dashboard:
+### Option A — live site (recommended)
 
-### Option A — local server (recommended; refresh button works)
+Visit https://stravainsights.tillworks.com. The **Refresh** button pulls the latest activities from Strava in a few seconds. Works from any device including mobile.
+
+### Option B — local server
 
 ```bash
 cd ~/prj/stravainsights
 python3 serve.py
 ```
 
-This starts a tiny local server at http://localhost:8732 and auto-opens it in your browser. The **Refresh** button in the dashboard's top-right pulls the latest activities from Strava and reloads — no terminal needed once it's running. Stop the server with Ctrl-C.
+Starts a server at http://localhost:8732 and auto-opens it in your browser. The Refresh button works here too. Stop with Ctrl-C.
 
-Bookmark http://localhost:8732 so it's one click away whenever the server is up.
-
-### Option B — open the file directly
+### Option C — open the file directly
 
 ```bash
 explorer.exe dashboard.html   # opens via your default Windows browser
@@ -73,26 +73,27 @@ explorer.exe dashboard.html   # opens via your default Windows browser
 wslview dashboard.html        # if wslu is installed
 ```
 
-The dashboard displays normally, but the Refresh button can't reach a server, so it will pop up a dialog explaining how to refresh from the terminal instead.
+The dashboard displays normally, but the Refresh button will pop up a dialog explaining how to refresh from the terminal instead.
 
 ## Automate the refresh with cron
 
-Install a daily cron job that runs the refresh at 6 AM every morning:
+### On the Lightsail server (recommended)
+
+SSH in and install a cron job to refresh automatically:
+
+```bash
+( crontab -l 2>/dev/null; echo "0 6 * * * cd /home/ubuntu/stravainsights && /usr/bin/python3 refresh.py >> refresh.log 2>&1" ) | crontab -
+```
+
+This runs at 6 AM daily. The server is always on, so the job always fires.
+
+### In WSL (local only)
 
 ```bash
 ( crontab -l 2>/dev/null; echo "0 6 * * * cd $HOME/prj/stravainsights && /usr/bin/python3 refresh.py >> refresh.log 2>&1" ) | crontab -
 ```
 
-Verify:
-
-```bash
-crontab -l
-```
-
-Notes:
-- WSL2 only runs cron while the WSL instance is running. If your WSL session isn't active at 6 AM (e.g. you closed all terminals), the job is skipped — the next manual `refresh.py` will catch up.
-- To keep WSL running in the background, add `wsl.exe -d Ubuntu --exec sleep infinity` to Windows Startup, or just open a terminal in the morning.
-- All output goes to `refresh.log` in the project folder.
+Note: WSL2 only runs cron while the WSL instance is active. If your terminal is closed at 6 AM the job is skipped — the next manual `refresh.py` or Refresh button press will catch up.
 
 ## Files
 
@@ -101,9 +102,10 @@ Notes:
 - `dashboard.html` — the dashboard (rebuilt on every refresh)
 - `setup.py` — one-time OAuth setup
 - `refresh.py` — fetch + rebuild script
-- `serve.py` — local web server for the dashboard (powers the Refresh button)
+- `serve.py` — web server for the dashboard (powers the Refresh button)
 - `template.html` — dashboard layout (edit to tweak the look)
 - `refresh.log` — output from cron runs
+- `deploy/` — Lightsail server setup (systemd service, Caddyfile, bootstrap script)
 
 ## Troubleshooting
 
