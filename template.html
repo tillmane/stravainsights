@@ -41,8 +41,8 @@
   .status-behind { background: #fee2e2; color: var(--bad); }
   .status-onpace { background: #fef3c7; color: #92400e; }
 
-  .grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 16px; }
-  @media (max-width: 1000px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 1000px) { .grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 700px) { .grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 460px) { .grid { grid-template-columns: 1fr; } }
   .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: var(--shadow); }
@@ -53,8 +53,6 @@
   .delta-up { background: #dcfce7; color: var(--good); }
   .delta-down { background: #fee2e2; color: var(--bad); }
 
-  .row { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 16px; }
-  @media (max-width: 900px) { .row { grid-template-columns: 1fr; } }
 
   .chart-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: var(--shadow); }
   .chart-title { font-size: 14px; font-weight: 600; margin: 0 0 12px; }
@@ -137,11 +135,6 @@
 
   <section class="grid">
     <div class="card">
-      <div class="label">Frequency rate</div>
-      <div class="value"><span id="freq-rate">—</span><span style="font-size:18px;color:var(--muted);">%</span></div>
-      <div class="sub" id="freq-sub"></div>
-    </div>
-    <div class="card">
       <div class="label">Avg distance / run</div>
       <div class="value"><span id="avg-dist">—</span><span style="font-size:18px;color:var(--muted);"> mi</span></div>
       <div class="sub" id="avg-sub"></div>
@@ -163,15 +156,19 @@
     </div>
   </section>
 
-  <section class="row">
-    <div class="chart-card">
-      <div class="chart-title">Cumulative miles vs goal pace</div>
-      <div class="chart-wrap"><canvas id="chart-cumulative"></canvas></div>
-    </div>
-    <div class="chart-card">
-      <div class="chart-title">Weekly miles</div>
-      <div class="chart-wrap"><canvas id="chart-weekly"></canvas></div>
-    </div>
+  <section class="chart-card" style="margin-bottom: 16px;">
+    <div class="chart-title">Rolling 30-day frequency rate &amp; avg distance</div>
+    <div class="chart-wrap"><canvas id="chart-rolling30"></canvas></div>
+  </section>
+
+  <section class="chart-card" style="margin-bottom: 16px;">
+    <div class="chart-title">Weekly miles</div>
+    <div class="chart-wrap"><canvas id="chart-weekly"></canvas></div>
+  </section>
+
+  <section class="chart-card" style="margin-bottom: 16px;">
+    <div class="chart-title">Cumulative miles vs goal pace</div>
+    <div class="chart-wrap"><canvas id="chart-cumulative"></canvas></div>
   </section>
 
   <section class="chart-card">
@@ -252,10 +249,6 @@
     }
 
     // Stat cards.
-    document.getElementById("freq-rate").textContent = fmtNum(d.frequency_rate, 1);
-    document.getElementById("freq-sub").textContent =
-      `${d.days_run} of ${d.days_into_year} days run so far`;
-
     document.getElementById("avg-dist").textContent = fmtNum(d.avg_distance, 2);
     document.getElementById("avg-sub").textContent =
       `${d.total_runs} runs total`;
@@ -276,14 +269,6 @@
     } else {
       reqDistEl.textContent = fmtNum(d.required_avg_distance_30, 2);
       reqDistSub.textContent = `at ${fmtNum(d.frequency_rate_30, 1)}% (last 30d) frequency`;
-      // Compare against the 30-day average, since that's the consistent reference point.
-      if (d.avg_distance_30 > 0) {
-        const diff = d.required_avg_distance_30 - d.avg_distance_30;
-        const arrow = diff > 0 ? "↑" : "↓";
-        const cls = diff > 0 ? "delta-down" : "delta-up";
-        reqDistEl.insertAdjacentHTML("afterend",
-          `<span class="delta ${cls}" style="margin-left:8px;font-size:13px;">${arrow} ${fmtNum(Math.abs(diff),2)} mi vs 30d avg</span>`);
-      }
     }
 
     // Recent runs.
@@ -305,6 +290,7 @@
 
     drawCumulativeChart(d);
     drawWeeklyChart(d);
+    drawRolling30Chart(d);
   }
 
   function escapeHtml(s) {
@@ -406,6 +392,90 @@
         scales: {
           x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } },
           y: { beginAtZero: true, ticks: { callback: v => v + " mi" }, grid: { color: "#eef0f3" } },
+        },
+      },
+    });
+  }
+
+  function drawRolling30Chart(d) {
+    if (!d.rolling_30d_series || !d.rolling_30d_series.length) return;
+    const ctx = document.getElementById("chart-rolling30");
+    const labels = d.rolling_30d_series.map(p => p.date);
+    const freqData = d.rolling_30d_series.map(p => p.freq);
+    const avgData = d.rolling_30d_series.map(p => p.avg_dist);
+
+    new Chart(ctx, {
+      type: "line",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Frequency rate (%)",
+            data: freqData,
+            borderColor: "#ea580c",
+            backgroundColor: "rgba(234,88,12,0.08)",
+            borderWidth: 2,
+            fill: true,
+            pointRadius: 0,
+            tension: 0.3,
+            yAxisID: "y",
+          },
+          {
+            label: "Avg distance (mi)",
+            data: avgData,
+            borderColor: "#2563eb",
+            backgroundColor: "rgba(37,99,235,0.08)",
+            borderWidth: 2,
+            fill: true,
+            pointRadius: 0,
+            tension: 0.3,
+            yAxisID: "y1",
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { position: "bottom", labels: { boxWidth: 14 } },
+          tooltip: {
+            callbacks: {
+              label: c => c.dataset.yAxisID === "y"
+                ? `${c.dataset.label}: ${c.parsed.y.toFixed(1)}%`
+                : `${c.dataset.label}: ${c.parsed.y.toFixed(2)} mi`,
+            },
+          },
+        },
+        scales: {
+          x: {
+            ticks: {
+              maxTicksLimit: 8,
+              callback: function(value) {
+                const lbl = this.getLabelForValue(value);
+                const dt = new Date(lbl + "T00:00:00");
+                return dt.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+              },
+            },
+            grid: { display: false },
+          },
+          y: {
+            type: "linear",
+            position: "left",
+            beginAtZero: true,
+            max: 100,
+            ticks: { callback: v => v + "%" },
+            grid: { color: "#eef0f3" },
+            title: { display: true, text: "Frequency rate" },
+          },
+          y1: {
+            type: "linear",
+            position: "right",
+            beginAtZero: true,
+            ticks: { callback: v => v + " mi" },
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: "Avg distance" },
+          },
         },
       },
     });

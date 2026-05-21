@@ -208,6 +208,40 @@ def compute_metrics(runs: list[dict], today: date) -> dict:
         for k, v in sorted(weekly.items())
     ]
 
+    # Rolling 30-day frequency rate and avg distance series.
+    rolling_30d_series: list[dict] = []
+    run_dates_set = set()
+    run_miles_by_date: dict[str, list[float]] = {}
+    for r in runs:
+        run_dates_set.add(r["date"])
+        run_miles_by_date.setdefault(r["date"], []).append(r["distance_mi"])
+
+    series_start = max(year_start + timedelta(days=29), year_start)
+    d = series_start
+    while d <= today:
+        w_start = d - timedelta(days=29)
+        w_days = 30
+        w_run_days = 0
+        w_total_miles = 0.0
+        w_run_count = 0
+        wd = w_start
+        while wd <= d:
+            iso = wd.isoformat()
+            if iso in run_dates_set:
+                w_run_days += 1
+                dists = run_miles_by_date.get(iso, [])
+                w_total_miles += sum(dists)
+                w_run_count += len(dists)
+            wd += timedelta(days=1)
+        freq = round(w_run_days / w_days * 100, 1)
+        avg = round(w_total_miles / w_run_count, 2) if w_run_count > 0 else 0.0
+        rolling_30d_series.append({
+            "date": d.isoformat(),
+            "freq": freq,
+            "avg_dist": avg,
+        })
+        d += timedelta(days=1)
+
     return {
         "goal_miles": GOAL_MILES,
         "goal_year": GOAL_YEAR,
@@ -233,6 +267,7 @@ def compute_metrics(runs: list[dict], today: date) -> dict:
         "cumulative_series": cumulative_series,
         "ideal_series": ideal_series,
         "weekly_series": weekly_series,
+        "rolling_30d_series": rolling_30d_series,
         "recent_runs": list(reversed(runs))[:10],
         "last_refreshed": datetime.now().isoformat(timespec="seconds"),
     }
