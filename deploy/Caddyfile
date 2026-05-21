@@ -1,0 +1,6 @@
+:80 {
+    basicauth * {
+        {$AUTH_USER} {$AUTH_HASH}
+    }
+    reverse_proxy 127.0.0.1:8732
+}

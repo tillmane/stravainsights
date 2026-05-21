@@ -32,6 +32,21 @@ The data pipeline is: **Strava API → runs.json → dashboard.html**
 
 In `refresh.py`: `GOAL_MILES = 1000`, `GOAL_YEAR = 2026`, `METERS_PER_MILE = 1609.344`.
 
+## Deployment (AWS Lightsail)
+
+The dashboard is hosted on a Lightsail instance behind Caddy (reverse proxy + basic auth).
+
+```
+Internet → Caddy (:80, basic auth) → 127.0.0.1:8732 (serve.py)
+```
+
+Setup files live in `deploy/`:
+- `setup.sh` — One-time bootstrap (installs deps, Caddy, systemd service, prompts for auth creds)
+- `stravainsights.service` — systemd unit keeping `serve.py` running
+- `Caddyfile` — Template; the actual config is written to `/etc/caddy/Caddyfile` by `setup.sh`
+
+To deploy updates: SSH in, `git pull`, `sudo systemctl restart stravainsights`.
+
 ## Sensitive Files
 
 `config.json` contains API secrets and must never be committed or shared.
