@@ -269,7 +269,7 @@ def compute_metrics(runs: list[dict], today: date) -> dict:
         "weekly_series": weekly_series,
         "rolling_30d_series": rolling_30d_series,
         "recent_runs": list(reversed(runs))[:10],
-        "last_refreshed": datetime.now().isoformat(timespec="seconds"),
+        "last_refreshed": datetime.now(timezone.utc).isoformat(timespec="seconds"),
     }
 
 

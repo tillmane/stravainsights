@@ -223,7 +223,7 @@
     const d = DATA;
 
     document.getElementById("refreshed").textContent =
-      "Last refreshed " + new Date(d.last_refreshed).toLocaleString();
+      "Last refreshed " + new Date(d.last_refreshed).toLocaleString("en-US", {timeZone: "America/Los_Angeles"});
     document.getElementById("total-miles").textContent = fmtNum(d.total_miles, 1);
     document.getElementById("hero-of").textContent = ` of ${d.goal_miles}`;
     document.getElementById("hero-pct").textContent = `${fmtNum(d.progress_pct, 1)}%`;
