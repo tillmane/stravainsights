@@ -31,7 +31,7 @@
   .hero-total { font-size: 44px; font-weight: 700; letter-spacing: -0.02em; }
   .hero-total .unit { color: var(--muted); font-size: 18px; font-weight: 500; margin-left: 6px; }
   .hero-of { color: var(--muted); font-size: 15px; }
-  .hero-pct { font-size: 18px; font-weight: 600; color: var(--accent); }
+
   .bar { height: 14px; background: #f1f0ec; border-radius: 999px; overflow: hidden; position: relative; }
   .bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent) 0%, #f97316 100%); border-radius: 999px; transition: width 0.6s ease; }
   .bar-marker { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--ink); opacity: 0.4; }
@@ -124,7 +124,6 @@
         <span class="hero-total" id="total-miles">—</span><span class="unit">mi</span>
         <span class="hero-of" id="hero-of"></span>
       </div>
-      <div class="hero-pct" id="hero-pct"></div>
     </div>
     <div class="bar"><div class="bar-fill" id="bar-fill" style="width:0%"></div><div class="bar-marker" id="bar-marker" style="left:0%"></div></div>
     <div class="hero-bottom">
@@ -226,7 +225,7 @@
       "Last refreshed " + new Date(d.last_refreshed).toLocaleString("en-US", {timeZone: "America/Los_Angeles"});
     document.getElementById("total-miles").textContent = fmtNum(d.total_miles, 1);
     document.getElementById("hero-of").textContent = ` of ${d.goal_miles}`;
-    document.getElementById("hero-pct").textContent = `${fmtNum(d.progress_pct, 1)}%`;
+
 
     const fill = document.getElementById("bar-fill");
     fill.style.width = Math.min(100, d.progress_pct) + "%";
