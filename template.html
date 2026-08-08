@@ -88,6 +88,26 @@
   .modal-actions { display: flex; gap: 8px; justify-content: flex-end; }
   .modal-actions button { padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); cursor: pointer; font-size: 13px; font-weight: 600; font-family: inherit; }
   .modal-actions button.primary { background: var(--ink); color: white; border-color: var(--ink); }
+
+  .sim-card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; }
+  .sim-toggle { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 16px 18px; background: none; border: none; cursor: pointer; font-family: inherit; text-align: left; }
+  .sim-toggle:hover { background: #fafaf8; }
+  .sim-toggle-label { font-size: 14px; font-weight: 600; }
+  .sim-chevron { width: 16px; height: 16px; transition: transform 0.2s; flex-shrink: 0; }
+  .sim-toggle[aria-expanded="true"] .sim-chevron { transform: rotate(180deg); }
+  .sim-body { padding: 0 18px 18px; border-top: 1px solid var(--line); }
+  .sim-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+  @media (max-width: 600px) { .sim-tools { grid-template-columns: 1fr; } }
+  .sim-tool { background: #fafaf8; border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .sim-tool-top { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+  .sim-input-row { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .sim-input { width: 90px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; font-size: 15px; font-family: inherit; background: white; }
+  .sim-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+  .sim-input-unit { font-size: 14px; color: var(--muted); }
+  .sim-result-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; }
+  .sim-result-value { font-size: 26px; font-weight: 700; letter-spacing: -0.01em; }
+  .sim-result-unit { color: var(--muted); font-size: 15px; font-weight: 500; }
+  .sim-result-note { font-size: 13px; color: var(--muted); margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -142,6 +162,7 @@
       <div class="label">Freq. rate · last 30d</div>
       <div class="value"><span id="freq-rate-30">—</span><span style="font-size:18px;color:var(--muted);">%</span></div>
       <div class="sub" id="freq-30-sub"></div>
+      <div class="sub" id="freq-30-dpw"></div>
     </div>
     <div class="card">
       <div class="label">Avg distance · last 30d</div>
@@ -152,6 +173,38 @@
       <div class="label">Required mi / run</div>
       <div class="value"><span id="req-dist">—</span><span style="font-size:18px;color:var(--muted);"> mi</span></div>
       <div class="sub" id="req-dist-sub">at last 30-day frequency rate</div>
+    </div>
+  </section>
+
+  <section class="sim-card" style="margin-bottom: 16px;" id="sim-card">
+    <button class="sim-toggle" id="sim-toggle" type="button" aria-expanded="false" aria-controls="sim-body">
+      <span class="sim-toggle-label">Goal Simulator</span>
+      <svg class="sim-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+    </button>
+    <div class="sim-body" id="sim-body" hidden>
+      <div class="sim-tools">
+        <div class="sim-tool">
+          <div class="sim-tool-top">Given avg distance, what frequency do I need?</div>
+          <div class="sim-input-row">
+            <input class="sim-input" id="sim-dist-input" type="number" min="0.1" step="0.1" placeholder="6.0">
+            <span class="sim-input-unit">mi / run</span>
+          </div>
+          <div class="sim-result-label">Required frequency rate</div>
+          <div class="sim-result-value" id="sim-dist-result">—<span class="sim-result-unit" id="sim-dist-unit"></span></div>
+          <div class="sim-result-note" id="sim-dist-dpw"></div>
+          <div class="sim-result-note" id="sim-dist-note"></div>
+        </div>
+        <div class="sim-tool">
+          <div class="sim-tool-top">Given frequency rate, what avg distance do I need?</div>
+          <div class="sim-input-row">
+            <input class="sim-input" id="sim-freq-input" type="number" min="0.1" max="7" step="0.1" placeholder="3.5">
+            <span class="sim-input-unit">days / week</span>
+          </div>
+          <div class="sim-result-label">Required avg distance</div>
+          <div class="sim-result-value" id="sim-freq-result">—<span class="sim-result-unit" id="sim-freq-unit"></span></div>
+          <div class="sim-result-note" id="sim-freq-note"></div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -255,6 +308,8 @@
     document.getElementById("freq-rate-30").textContent = fmtNum(d.frequency_rate_30, 1);
     document.getElementById("freq-30-sub").textContent =
       `${d.days_run_30} of last ${d.window_days} days`;
+    document.getElementById("freq-30-dpw").textContent =
+      `${fmtNum(d.frequency_rate_30 / 100 * 7, 1)} days / week`;
 
     document.getElementById("avg-dist-30").textContent = fmtNum(d.avg_distance_30, 2);
     document.getElementById("avg-30-sub").textContent =
@@ -480,6 +535,83 @@
     });
   }
 
+  // ---------- Goal Simulator ----------
+
+  function initSimulator() {
+    const toggle = document.getElementById("sim-toggle");
+    const body = document.getElementById("sim-body");
+
+    toggle.addEventListener("click", () => {
+      const open = toggle.getAttribute("aria-expanded") === "true";
+      toggle.setAttribute("aria-expanded", String(!open));
+      body.hidden = open;
+    });
+
+    const distInput = document.getElementById("sim-dist-input");
+    const freqInput = document.getElementById("sim-freq-input");
+
+    function calcFromDist() {
+      const d = DATA;
+      const dist = parseFloat(distInput.value);
+      const resultEl = document.getElementById("sim-dist-result");
+      const noteEl = document.getElementById("sim-dist-note");
+      const dpwEl = document.getElementById("sim-dist-dpw");
+      const unitEl = document.getElementById("sim-dist-unit");
+      if (!d || !isFinite(dist) || dist <= 0) {
+        resultEl.firstChild.textContent = "—";
+        unitEl.textContent = "";
+        dpwEl.textContent = "";
+        noteEl.textContent = "";
+        return;
+      }
+      // runs_needed = miles_remaining / dist
+      // freq_needed (%) = (runs_needed / days_remaining) * 100
+      const runsNeeded = d.miles_remaining / dist;
+      const freqNeeded = (runsNeeded / d.days_remaining) * 100;
+      if (freqNeeded > 100) {
+        resultEl.firstChild.textContent = ">100";
+        unitEl.textContent = "%";
+        dpwEl.textContent = "";
+        noteEl.textContent = "Not achievable at that distance — not enough days left.";
+      } else {
+        resultEl.firstChild.textContent = fmtNum(freqNeeded, 1);
+        unitEl.textContent = "%";
+        dpwEl.textContent = `${fmtNum(freqNeeded / 100 * 7, 1)} days / week`;
+        noteEl.textContent = `${Math.ceil(runsNeeded)} more runs needed over ${d.days_remaining} days`;
+      }
+    }
+
+    function calcFromFreq() {
+      const d = DATA;
+      const dpw = parseFloat(freqInput.value);
+      const resultEl = document.getElementById("sim-freq-result");
+      const noteEl = document.getElementById("sim-freq-note");
+      const unitEl = document.getElementById("sim-freq-unit");
+      if (!d || !isFinite(dpw) || dpw <= 0) {
+        resultEl.firstChild.textContent = "—";
+        unitEl.textContent = "";
+        noteEl.textContent = "";
+        return;
+      }
+      // convert days/week to % of days, then calculate
+      const freq = (dpw / 7) * 100;
+      const runsAvailable = (freq / 100) * d.days_remaining;
+      if (runsAvailable < 1) {
+        resultEl.firstChild.textContent = "—";
+        unitEl.textContent = "";
+        noteEl.textContent = "Frequency too low — fewer than 1 run remaining.";
+        return;
+      }
+      const distNeeded = d.miles_remaining / runsAvailable;
+      resultEl.firstChild.textContent = fmtNum(distNeeded, 2);
+      unitEl.textContent = " mi";
+      noteEl.textContent = `${Math.floor(runsAvailable)} runs available over ${d.days_remaining} days`;
+    }
+
+    distInput.addEventListener("input", calcFromDist);
+    freqInput.addEventListener("input", calcFromFreq);
+  }
+
   // ---------- Manual refresh button ----------
 
   function showToast(message, kind) {
@@ -541,6 +673,7 @@
   });
 
   render();
+  initSimulator();
 </script>
 </body>
 </html>
